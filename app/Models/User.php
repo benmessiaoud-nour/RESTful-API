@@ -42,4 +42,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function lessons(){
+        return $this->hasMany(Lesson::class);//select from lessons where user_id = lesson_id
+    }
 }
