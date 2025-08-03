@@ -57,7 +57,7 @@ class RelationshipController extends Controller
        $fields=array();
        $filtered=array();
        foreach($tag as $lesson)
-       {
+
            $fields['title'] = $lesson->title;
            $fields['content'] = $lesson->body;
            $filtered[] = $fields;

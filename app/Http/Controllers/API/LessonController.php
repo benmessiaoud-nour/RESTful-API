@@ -12,29 +12,25 @@ class LessonController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $Lesson= LessonResource::collection(Lesson::all());
+        $limit=$request->input('limit');
+        $limit=($limit>50) ? 50 : $limit;
+        $Lesson= LessonResource::collection(Lesson::paginate($limit));
         return $Lesson->response()->setStatusCode(200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
       $Lesson=new LessonResource(Lesson::create($request->all()));
         return $Lesson->response()->setStatusCode(200);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $Lesson=new LessonResource(Lesson::find($id));
-        return $Lesson->response()->setStatusCode(200,'Userreturned succefuly')
-            ->header('additiona header', 'true');
+        return $Lesson->response()->setStatusCode(200,'User returned succefuly')
+            ->header('additional header', 'true');
     }
 
     /**
@@ -42,6 +38,8 @@ class LessonController extends Controller
      */
     public function update(Request $request, Lesson $lesson , $id)
     {
+        $id =Lesson::findOrFail($id);
+        $this->authorize('update', $id);
         $Lesson = new LessonResource(Lesson::findOrFail($id));
         $Lesson->update($request->all());
         return $Lesson->response()->setStatusCode(200);
@@ -52,6 +50,8 @@ class LessonController extends Controller
      */
     public function destroy($id)
     {
+        $id =Lesson::findOrFail($id);
+        $this->authorize('delete', $id);
        Lesson::find($id)->delete();
         return 204;
     }

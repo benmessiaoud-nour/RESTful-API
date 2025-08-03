@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\UserLogedIn;
+use App\Listeners\RevokeToken;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+       Event::listen(
+           UserLogedIn::class,
+           RevokeToken::class,
+       );
     }
 }

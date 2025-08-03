@@ -5,16 +5,25 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\User as UserResource;
 
 class UserController extends Controller
 {
+
+   public function __construct()
+   {
+       $this->middleware('auth.basic')->except(['index']);
+   }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-      $user = UserResource::Collection(User::all()) ;
+        $limit=$request->input('limit');
+        $limit=($limit>50) ? 50 : $limit;
+      $user = UserResource::Collection(User::paginate($limit)) ;
         return $user->response()->setStatusCode(200);
     }
 
@@ -23,7 +32,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-      $user = new UserResource(User::create($request->all()));
+        $this->authorize('create',User::class);
+      $user = new UserResource(User::create(
+          [
+              'name' => $request->name,
+              'email'=> $request->email,
+              'password'=>Hash::make($request->password)
+          ]));
         return $user->response()->setStatusCode(200);
     }
 
@@ -42,9 +57,11 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $idUser=User::findOrFail($id);
+        $this->authorize('update',$idUser);
         $User = new UserResource(User::findOrFail($id));
         $User->update($request->all());
-        return $user->response()->setStatusCode(200);
+        return $User->response()->setStatusCode(200);
     }
 
     /**
@@ -52,6 +69,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $idUser=User::findOrFail($id);
+        $this->authorize('delete',$idUser);
         User::find($id)->delete();
         return 204;
     }

@@ -3,9 +3,11 @@
 use App\Http\Controllers\API\LessonController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Middleware\onceBasic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
+
 use App\Models\Lesson;
 use App\Models\User;
 use App\Models\Tag;
@@ -25,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('v1')->group(function () {
+Route::prefix(['v1'])->group(function () {
 
 Route::apiResource('lessons', LessonController::class);
 
